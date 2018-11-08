@@ -3,7 +3,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import csv
+import matplotlib.pyplot as plt
+import numpy as np
 
+def acuracy_rate(model, X, y):
+    y_pred = model(X)
+    maxes = torch.argmax(y_pred, 1)
+    sum = torch.sum(torch.eq(maxes, y)).type(dtype)
+    return (sum/maxes.shape[0]*100)
 
 class Net(nn.Module):
     def __init__(self, input_dim, output_dimension, hidden):
@@ -46,7 +53,7 @@ label_matrix = torch.Tensor(train_labels).type(torch.LongTensor)
 
 input_dim = 4
 output_dim = 3
-h = 20
+h = 60
 model = Net(input_dim, output_dim, h)
 
 # cross_entropy = nn.CrossEntropyLoss().cuda()
@@ -56,7 +63,8 @@ optimizer = optim.Adam(model.parameters(), lr=1e-3)
 # train model
 loss_list = []
 
-iteration_number = 20000
+iteration_number = 10000
+loss_vec = []
 for iteration in range(iteration_number):
     avg_lost = 0
     # forward pass
@@ -69,10 +77,13 @@ for iteration in range(iteration_number):
     loss.backward()
     # Updating parameters
     optimizer.step()
+    loss_vec.append(loss.data[0])
 
 # now predict our Xor table
-
-predicted = model(state_matrix)
-maxes = torch.argmax(predicted, 1)
-sum = torch.sum(torch.eq(maxes, label_matrix)).type(dtype)
-print (sum/maxes.shape[0]*100)
+plt.plot(np.arange(iteration_number), loss_vec)
+plt.title('iris classefir')
+plt.xlabel('epoch')
+plt.ylabel('Train loss')
+plt.savefig('./Q2.png')
+print(acuracy_rate(model, state_matrix, label_matrix))
+plt.show()
