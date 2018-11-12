@@ -1,0 +1,4 @@
+linear model:
+ephoc 100, loss = 0.0041  val_loss = 0.0054
+convolotional model:
+ephoc 100, loss = 0.0002  val_loss = 0.0013
